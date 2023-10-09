@@ -1,6 +1,6 @@
 // import "./App.scss";
 import Layout from "./Layout/Layout";
-import * as colors from "@mui/material/colors";
+// import * as colors from "@mui/material/colors";
 import { ThemeProvider, createTheme } from "@mui/material";
 
 const theme = createTheme({
