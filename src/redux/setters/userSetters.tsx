@@ -6,28 +6,36 @@ import { UserStateType, UserType, setUser } from "../reducers/userSlice";
 
 export function requestSetUser(
   dispatch: Dispatch<Action>,
-  onRunCallback?: () => void,
-  onSuccessCallback?: () => void,
-  onErrorCallback?: () => void
+  data: LoginInputsType,
+  callbacks: {
+    onRun?: () => void;
+    onSuccess?: () => void;
+    onError?: () => void;
+  }
 ) {
-  if (onRunCallback) {
-    onRunCallback();
+  if (callbacks.onRun) {
+    callbacks.onRun();
   }
   return new Promise((resolve, reject) => {
     axios
-      .post<ApiSuccessfullResponse<UserType>>(api("client/setting"))
+      .post<ApiSuccessfullResponse<UserType>>(api("user/login"), data)
       .then((res) => {
         dispatch(setUser(res.data.data));
         resolve(res.data);
-        if (onSuccessCallback) {
-          onSuccessCallback();
+        if (callbacks.onSuccess) {
+          callbacks.onSuccess();
         }
       })
       .catch((err) => {
         reject(err);
-        if (onErrorCallback) {
-          onErrorCallback();
+        if (callbacks.onError) {
+          callbacks.onError();
         }
       });
   });
 }
+
+export type LoginInputsType = LoginInputsTypeEmail | LoginInputsTypeUsername;
+
+export type LoginInputsTypeEmail = { email: string; password: string };
+export type LoginInputsTypeUsername = { username: string; password: string };

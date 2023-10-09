@@ -1,7 +1,9 @@
 // import "./App.scss";
+import { Provider } from "react-redux";
 import Layout from "./Layout/Layout";
 // import * as colors from "@mui/material/colors";
 import { ThemeProvider, createTheme } from "@mui/material";
+import { store } from "./redux/store";
 
 const theme = createTheme({
   // palette: {
@@ -17,11 +19,12 @@ const theme = createTheme({
   //   },
   // },
   palette: {
-    // primary: {
-    //   main: "#0091D5",
-    // },
-    secondary: {
+    primary: {
       main: "#EA6A47",
+    },
+
+    secondary: {
+      main: "#216869",
       // main: colors.deepOrange[500],
     },
     background: {
@@ -37,9 +40,9 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <div className="App">
+      <Provider store={store}>
         <Layout />
-      </div>
+      </Provider>
     </ThemeProvider>
   );
 }

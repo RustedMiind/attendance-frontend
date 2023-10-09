@@ -1,9 +1,13 @@
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import { Toolbar, IconButton, Typography } from "@mui/material";
+import { Toolbar, IconButton, Typography, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import UserAvatar from "./UserAvatar";
+import { useSelector } from "react-redux";
+import { StateType } from "../../redux/store";
+import LoginDialog from "../login-dialog/LoginDialog";
+import { useState } from "react";
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -16,35 +20,56 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 function Navbar({ open, handleDrawerOpen }: PropsType) {
+  const user = useSelector((state: StateType) => state.user);
+  const [loginDrawerOpen, setLoginDrawerOpen] = useState(false);
+  const handleCloseLoginDrawer = () => {
+    setLoginDrawerOpen(false);
+  };
+  const handleOpenLoginDrawer = () => {
+    setLoginDrawerOpen(true);
+  };
   return (
-    <AppBar position="fixed" open={open} elevation={0}>
-      <Toolbar>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          onClick={handleDrawerOpen}
-          edge="start"
-          sx={{
-            transition: "200ms",
-            // marginRight: 2,
-          }}
-        >
-          <MenuIcon />
-        </IconButton>
-        {/* <IconButton component={NavLink} to="/" size="large">
+    <>
+      <AppBar position="fixed" open={open} elevation={2} color="default">
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            edge="start"
+            sx={{
+              transition: "200ms",
+              // marginRight: 2,
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          {/* <IconButton component={NavLink} to="/" size="large">
           <HomeIcon fontSize="medium" sx={{ color: "primary.contrastText" }} />
         </IconButton> */}
-        <Typography
-          variant="h6"
-          noWrap
-          component="div"
-          sx={{ marginLeft: 1, flexGrow: 1 }}
-        >
-          Dashboard
-        </Typography>
-        <UserAvatar />
-      </Toolbar>
-    </AppBar>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ marginLeft: 1, flexGrow: 1 }}
+          >
+            Dashboard
+          </Typography>
+          {user.isUser ? (
+            <UserAvatar />
+          ) : (
+            <Button
+              color={"secondary"}
+              onClick={handleOpenLoginDrawer}
+              variant="outlined"
+            >
+              Login
+            </Button>
+          )}
+        </Toolbar>
+      </AppBar>
+      <LoginDialog isOpen={loginDrawerOpen} close={handleCloseLoginDrawer} />
+    </>
   );
 }
 
