@@ -7,14 +7,10 @@ import { UserStateType, UserType, setUser } from "../reducers/userSlice";
 export function requestSetUser(
   dispatch: Dispatch<Action>,
   data: LoginInputsType,
-  callbacks: {
-    onRun?: () => void;
-    onSuccess?: () => void;
-    onError?: () => void;
-  }
+  onRun?: () => void
 ) {
-  if (callbacks.onRun) {
-    callbacks.onRun();
+  if (onRun) {
+    onRun();
   }
   return new Promise((resolve, reject) => {
     axios
@@ -22,15 +18,9 @@ export function requestSetUser(
       .then((res) => {
         dispatch(setUser(res.data.data));
         resolve(res.data);
-        if (callbacks.onSuccess) {
-          callbacks.onSuccess();
-        }
       })
       .catch((err) => {
         reject(err);
-        if (callbacks.onError) {
-          callbacks.onError();
-        }
       });
   });
 }

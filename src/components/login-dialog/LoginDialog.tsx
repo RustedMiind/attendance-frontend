@@ -8,7 +8,12 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Box, Stack } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { LoginInputsTypeUsername } from "../../redux/setters/userSetters";
+import {
+  LoginInputsTypeUsername,
+  requestSetUser,
+} from "../../redux/setters/userSetters";
+import LoadingButton from "@mui/lab/LoadingButton";
+import SaveIcon from "@mui/icons-material/Save";
 
 function LoginDialog(props: PropsType) {
   const [status, setStatus] = React.useState<"loading" | "none" | "error">(
@@ -28,10 +33,25 @@ function LoginDialog(props: PropsType) {
   const handleClose = () => {
     props.close();
   };
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    requestSetUser(dispatch, data, () => {
+      setStatus("loading");
+    })
+      .then((res) => {
+        console.log(res);
+        handleClose();
+      })
+      .catch((err) => {
+        console.log(err);
+        setStatus("error");
+      });
+  };
 
   return (
-    <Dialog open={props.isOpen} onClose={handleClose}>
+    <Dialog
+      open={props.isOpen}
+      onClose={status === "loading" ? () => {} : props.close}
+    >
       <DialogTitle>Login</DialogTitle>
       <DialogContent>
         <DialogContentText gutterBottom>
@@ -65,10 +85,21 @@ function LoginDialog(props: PropsType) {
       </DialogContent>
       <DialogActions sx={{ px: 3 }}>
         <Stack spacing={1} direction={"row"} pb={2}>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleClose} type="submit">
-            Login
+          <Button
+            disabled={status === "loading"}
+            color={status === "error" ? "error" : undefined}
+            onClick={props.close}
+          >
+            Cancel
           </Button>
+          <LoadingButton
+            loading={status === "loading"}
+            color={status === "error" ? "error" : undefined}
+            variant="contained"
+            onClick={handleSubmit}
+          >
+            Login
+          </LoadingButton>
         </Stack>
       </DialogActions>
     </Dialog>
