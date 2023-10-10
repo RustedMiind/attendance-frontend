@@ -5,6 +5,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Sidebar from "../components/sidebar/Sidebar";
 import Navbar from "../components/navbar/Navbar";
 import AppRoutes from "./AppRoutes";
+import OnPageLoad from "../functions/onPageLoad";
+import { useDispatch } from "react-redux";
 
 export const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -47,6 +49,9 @@ function Layout() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const dispatch = useDispatch();
+  OnPageLoad(dispatch);
 
   return (
     <Box sx={{ display: "flex", width: "100%" }}>

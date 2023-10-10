@@ -3,3 +3,6 @@ export type ApiSuccessfullResponse<T> = {
   message: string;
   status: string;
 };
+export type ApiErrorResponse<T> = {
+  response: { data: ApiSuccessfullResponse<T> };
+};

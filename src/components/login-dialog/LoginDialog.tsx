@@ -14,11 +14,14 @@ import {
 } from "../../redux/setters/userSetters";
 import LoadingButton from "@mui/lab/LoadingButton";
 import SaveIcon from "@mui/icons-material/Save";
+import { AxiosError } from "axios";
+import { ApiErrorResponse } from "../../types/ApiResponses";
 
 function LoginDialog(props: PropsType) {
   const [status, setStatus] = React.useState<"loading" | "none" | "error">(
     "none"
   );
+  const [error, setError] = React.useState<null | string>(null);
   const [data, setData] = React.useState<LoginInputsTypeUsername>({
     username: "",
     password: "",
@@ -33,17 +36,20 @@ function LoginDialog(props: PropsType) {
   const handleClose = () => {
     props.close();
   };
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLDivElement>) => {
+    e.preventDefault();
     requestSetUser(dispatch, data, () => {
       setStatus("loading");
+      setError(null);
     })
       .then((res) => {
         console.log(res);
         handleClose();
       })
-      .catch((err) => {
+      .catch((err: ApiErrorResponse<{ message: string }>) => {
         console.log(err);
         setStatus("error");
+        setError(err.response.data.message);
       });
   };
 
@@ -51,6 +57,8 @@ function LoginDialog(props: PropsType) {
     <Dialog
       open={props.isOpen}
       onClose={status === "loading" ? () => {} : props.close}
+      component={"form"}
+      onSubmit={handleSubmit}
     >
       <DialogTitle>Login</DialogTitle>
       <DialogContent>
@@ -58,6 +66,11 @@ function LoginDialog(props: PropsType) {
           To subscribe to this website, please enter your email address here. We
           will send updates occasionally.
         </DialogContentText>
+        {error && (
+          <DialogContentText color={"error"} gutterBottom>
+            {error}
+          </DialogContentText>
+        )}
         <TextField
           autoFocus
           margin="dense"
@@ -66,6 +79,7 @@ function LoginDialog(props: PropsType) {
           type="text"
           name="username"
           fullWidth
+          error={status === "error"}
           variant="standard"
           value={data.username}
           onChange={handleUsernameChange}
@@ -78,6 +92,7 @@ function LoginDialog(props: PropsType) {
           type="password"
           name="password"
           fullWidth
+          error={status === "error"}
           variant="standard"
           value={data.password}
           onChange={handlePasswordChange}
@@ -96,7 +111,7 @@ function LoginDialog(props: PropsType) {
             loading={status === "loading"}
             color={status === "error" ? "error" : undefined}
             variant="contained"
-            onClick={handleSubmit}
+            type="submit"
           >
             Login
           </LoadingButton>
