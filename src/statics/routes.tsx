@@ -2,9 +2,6 @@ import HomeIcon from "@mui/icons-material/Home";
 import { OverridableComponent } from "@mui/material/OverridableComponent";
 import { SvgIconTypeMap } from "@mui/material";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
-// import HowToRegIcon from "@mui/icons-material/HowToReg";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-// import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const Routes: RoutesListType = [
   {
@@ -13,14 +10,9 @@ const Routes: RoutesListType = [
     icon: HomeIcon,
   },
   {
-    name: "Employees",
-    route: "/employees",
+    name: "Roles",
+    route: "/roles",
     icon: RecentActorsIcon,
-  },
-  {
-    name: "Assignments",
-    route: "/assignments",
-    icon: AssignmentIcon,
   },
 ];
 
