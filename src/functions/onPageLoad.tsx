@@ -1,13 +1,14 @@
 import axios from "axios";
 import { getCookie } from "./cookies";
-import { Action, Dispatch, AnyAction } from "redux";
+import { Dispatch, AnyAction } from "redux";
 import { requestCheckUser } from "../redux/setters/userSetters";
-
-function OnPageLoad(dispatch: Dispatch<Action>) {
+import { NavigateFunction } from "react-router-dom";
+function OnPageLoad(dispatch: Dispatch<AnyAction>, navigate: NavigateFunction) {
   const jwt = getCookie("jwt");
   if (jwt) {
     axios.defaults.headers.common.authorization = jwt;
     requestCheckUser(dispatch);
+    navigate("/");
     console.log(jwt);
   } else {
     console.log("Not a user");

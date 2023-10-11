@@ -15,6 +15,9 @@ export const settingsSlice = createSlice<
     setUser: (state, action: { payload: UserData }) => {
       return { ...action.payload, isUser: true };
     },
+    setNotUser: () => {
+      return { isUser: false };
+    },
   },
 });
 
@@ -30,5 +33,5 @@ export interface UserData {
   username: string;
   roleId: string;
 }
-export const { setUser } = settingsSlice.actions;
+export const { setUser, setNotUser } = settingsSlice.actions;
 export default settingsSlice.reducer;

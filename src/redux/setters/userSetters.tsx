@@ -5,7 +5,12 @@ import {
   ApiErrorResponse,
   ApiSuccessfullResponse,
 } from "../../types/ApiResponses";
-import { UserStateType, UserType, setUser } from "../reducers/userSlice";
+import {
+  UserStateType,
+  UserType,
+  setNotUser,
+  setUser,
+} from "../reducers/userSlice";
 import { setCookie } from "../../functions/cookies";
 
 export function requestSetUser(
@@ -50,6 +55,13 @@ export function requestCheckUser(dispatch: Dispatch<Action>) {
         });
     }
   );
+}
+export function requestUserLogout(dispatch: Dispatch<Action>) {
+  return new Promise((resolve, reject) => {
+    setCookie("jwt", "", 0.00001);
+    dispatch(setNotUser({}));
+    resolve("Set Successfully");
+  });
 }
 
 export type LoginInputsType = LoginInputsTypeEmail | LoginInputsTypeUsername;

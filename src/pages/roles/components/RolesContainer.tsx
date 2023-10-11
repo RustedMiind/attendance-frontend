@@ -16,6 +16,7 @@ function RolesContainer(props: PropsType) {
     <Stack direction="row" flexWrap="wrap" id="roles-container">
       {props.roles.map((role) => (
         <RoleCard
+          key={role.id}
           name={role.name}
           accesses={role.accesses.map((access) => access.name)}
           id={role.id}

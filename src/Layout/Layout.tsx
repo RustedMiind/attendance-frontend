@@ -1,11 +1,12 @@
 import { styled, Theme, CSSObject } from "@mui/material/styles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Sidebar from "../components/sidebar/Sidebar";
 import Navbar from "../components/navbar/Navbar";
 import AppRoutes from "./AppRoutes";
 import OnPageLoad from "../functions/onPageLoad";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 export const DrawerHeader = styled("div")(({ theme }) => ({
@@ -49,9 +50,11 @@ function Layout() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  OnPageLoad(dispatch);
+  useEffect(() => {
+    OnPageLoad(dispatch, navigate);
+  }, []);
 
   return (
     <Box sx={{ display: "flex", width: "100%" }}>

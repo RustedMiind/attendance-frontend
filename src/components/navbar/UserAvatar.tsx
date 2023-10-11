@@ -10,6 +10,8 @@ import Tooltip from "@mui/material/Tooltip";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import { NavLink, NavLinkProps } from "react-router-dom";
+import { requestUserLogout } from "../../redux/setters/userSetters";
+import { useDispatch } from "react-redux";
 
 export function NavLinkDefaultProps(to: string): MuiNavLinkType {
   return {
@@ -28,7 +30,7 @@ function UserAvatar() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  const dispatch = useDispatch();
   return (
     <>
       <Tooltip enterDelay={500} title="Account settings">
@@ -100,7 +102,12 @@ function UserAvatar() {
           </MenuItem>
         </Link>
 
-        <MenuItem onClick={handleClose}>
+        <MenuItem
+          onClick={() => {
+            requestUserLogout(dispatch);
+            handleClose();
+          }}
+        >
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
