@@ -43,8 +43,12 @@ function LoginDialog(props: PropsType) {
       setError(null);
     })
       .then((res) => {
-        console.log(res);
-        handleClose();
+        setTimeout(() => {
+          console.log(res);
+          handleClose();
+
+          setStatus("none");
+        }, 2000);
       })
       .catch((err: ApiErrorResponse<{ message: string }>) => {
         console.log(err);
@@ -80,6 +84,7 @@ function LoginDialog(props: PropsType) {
           name="username"
           fullWidth
           error={status === "error"}
+          disabled={status === "loading"}
           variant="standard"
           value={data.username}
           onChange={handleUsernameChange}
@@ -91,6 +96,7 @@ function LoginDialog(props: PropsType) {
           label="Password"
           type="password"
           name="password"
+          disabled={status === "loading"}
           fullWidth
           error={status === "error"}
           variant="standard"
