@@ -12,6 +12,7 @@ import {
   setUser,
 } from "../reducers/userSlice";
 import { setCookie } from "../../functions/cookies";
+import setAuthentication from "../../functions/setAuthentication";
 
 export function requestSetUser(
   dispatch: Dispatch<Action>,
@@ -31,8 +32,7 @@ export function requestSetUser(
       )
       .then((res) => {
         dispatch(setUser(res.data.data));
-
-        setCookie("jwt", res.data.data.token, 2);
+        setAuthentication(res.data.data.token);
         resolve(res);
       })
       .catch((err) => {
