@@ -7,6 +7,7 @@ function ProtectedComponent(props: PropsType): JSX.Element | null {
   const user = useSelector((state: { user: UserStateType }) => state.user);
   // use in production mode
   const redirectCondition = user.isUser === false && user.status === "error";
+  const showCondition = !!user.isUser;
 
   // use in development mode
   // const redirectCondition = false;
@@ -17,8 +18,12 @@ function ProtectedComponent(props: PropsType): JSX.Element | null {
     if (redirectCondition) {
       navigate(props.redirect || "/");
     }
-  }, [redirectCondition, props.redirect]);
-  return props.children;
+  }, [redirectCondition, props.redirect, user.status]);
+  if (showCondition) {
+    return props.children;
+  } else {
+    return null;
+  }
 }
 
 type PropsType = {
