@@ -8,7 +8,7 @@ function OnPageLoad(dispatch: Dispatch<AnyAction>, navigate: NavigateFunction) {
   if (jwt) {
     axios.defaults.headers.common.authorization = jwt;
     requestCheckUser(dispatch);
-    navigate("/");
+    // navigate("/");
     console.log(jwt);
   } else {
     console.log("Not a user");
