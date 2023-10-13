@@ -18,7 +18,7 @@ function RolesContainer(props: PropsType) {
         <RoleCard
           key={role.id}
           name={role.name}
-          accesses={role.accesses.map((access) => access.name)}
+          permissions={role.permissions.map((permission) => permission.name)}
           id={role.id}
         />
       ))}

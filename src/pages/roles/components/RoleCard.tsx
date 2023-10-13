@@ -25,7 +25,7 @@ function RoleCard(props: PropsType) {
             {props.placeholder ? (
               <Skeleton width="100%" />
             ) : (
-              props.accesses.join(", ")
+              props.permissions.join(", ")
             )}
           </Typography>
         </CardContent>
@@ -49,7 +49,7 @@ type PropsType =
       placeholder?: false;
       name: string;
       id: string;
-      accesses: string[];
+      permissions: string[];
     };
 
 export default RoleCard;

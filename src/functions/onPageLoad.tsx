@@ -10,7 +10,9 @@ function OnPageLoad(dispatch: Dispatch<AnyAction>, navigate: NavigateFunction) {
   const jwt = getCookie("jwt");
   if (jwt) {
     axios.defaults.headers.common.authorization = jwt;
-    requestCheckUser(dispatch);
+    requestCheckUser(dispatch).catch((err) => {
+      requestUserLogout(dispatch);
+    });
     // navigate("/");
     console.log(jwt);
   } else {

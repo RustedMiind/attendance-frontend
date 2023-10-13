@@ -36,6 +36,7 @@ export function requestSetUser(
         resolve(res);
       })
       .catch((err) => {
+        requestUserLogout(dispatch);
         reject(err);
       });
   });

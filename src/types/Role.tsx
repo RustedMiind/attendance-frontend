@@ -1,9 +1,9 @@
 export type RoleType = {
   id: string;
   name: string;
-  accesses: accessType[];
+  permissions: permissionType[];
 };
-export type accessType = {
+export type permissionType = {
   id: number;
   name: string;
   actionId: number;
