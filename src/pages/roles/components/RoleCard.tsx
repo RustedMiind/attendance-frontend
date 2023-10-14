@@ -21,7 +21,7 @@ function RoleCard(props: PropsType) {
           <Typography variant="h5" component="div">
             {props.placeholder ? <Skeleton width="100%" /> : props.name}
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" color={"GrayText"}>
             {props.placeholder ? (
               <Skeleton width="100%" />
             ) : (

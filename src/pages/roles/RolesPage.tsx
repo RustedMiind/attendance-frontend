@@ -1,13 +1,4 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Stack,
-  Typography,
-} from "@mui/material";
-import RoleCard from "./components/RoleCard";
+import { Box, Typography } from "@mui/material";
 import RolesContainer from "./components/RolesContainer";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -18,12 +9,14 @@ import {
 } from "../../types/ApiResponses";
 import { RoleType } from "../../types/Role";
 import RolesPlaceholder from "./components/RolesPlaceholder";
+import SearchCreateBar from "./components/search-create-bar/SearchCreateBar";
 
 function RolesPage() {
   const [roles, setRoles] = useState<RoleType[] | "loading" | "error">(
     "loading"
   );
   const [error, setError] = useState<{ message: string } | null>(null);
+  const [search, setSearch] = useState("");
   useEffect(() => {
     setError(null);
     setTimeout(() => {
@@ -41,15 +34,27 @@ function RolesPage() {
     }, 1000);
   }, []);
   return (
-    <Box>
-      {Array.isArray(roles) && <RolesContainer roles={roles} />}
-      {error && (
-        <Typography variant="h5" textAlign="center" color="error">
-          {error.message}
-        </Typography>
-      )}
-      {roles === "loading" && <RolesPlaceholder />}
-    </Box>
+    <>
+      <Box>
+        <SearchCreateBar search={search} setSearch={setSearch} />
+        {Array.isArray(roles) && (
+          <RolesContainer
+            roles={roles.filter((role) => {
+              const condition = role.name
+                .toLowerCase()
+                .includes(search.toLocaleLowerCase());
+              return condition;
+            })}
+          />
+        )}
+        {error && (
+          <Typography variant="h5" textAlign="center" color="error">
+            {error.message}
+          </Typography>
+        )}
+        {roles === "loading" && <RolesPlaceholder />}
+      </Box>
+    </>
   );
 }
 
