@@ -11,21 +11,29 @@ import PermissionInput from "./PermissionInput";
 import axios from "axios";
 import api from "../../../../statics/api";
 import { ApiSuccessfullResponse } from "../../../../types/ApiResponses";
+import { PermissionType } from "../../../../types/Permission";
+import { CompressedPermissionType } from "../../../../types/CompressedPermission";
 
 export default function CreateNewRoleDialog(props: PropsType) {
   const handleClose = props.close;
-  const [permissions, setPermissions] = React.useState<null | PermissionType[]>(
-    null
-  );
+  const [permissions, setPermissions] = React.useState<
+    null | CompressedPermissionType[]
+  >(null);
   React.useEffect(() => {
     setTimeout(() => {
       axios
-        .get<ApiSuccessfullResponse<PermissionType[]>>(api("permission/togive"))
+        .get<
+          ApiSuccessfullResponse<{
+            permissions: PermissionType[];
+            compressedPermissions: CompressedPermissionType[];
+          }>
+        >(api("permission/togive"))
         .then((res) => {
-          setPermissions(res.data.data);
+          setPermissions(res.data.data.compressedPermissions);
+          console.log(res.data.data);
         });
     }, 2000);
-  });
+  }, []);
 
   return (
     <Dialog
@@ -52,7 +60,7 @@ export default function CreateNewRoleDialog(props: PropsType) {
         />
         <Stack my={2}>
           {permissions?.map((permission) => (
-            <PermissionInput key={permission.id} permission={permission} />
+            <PermissionInput key={permission.name} permission={permission} />
           ))}
         </Stack>
       </DialogContent>
@@ -69,16 +77,4 @@ export default function CreateNewRoleDialog(props: PropsType) {
 type PropsType = {
   open: boolean;
   close: () => void;
-};
-
-export type PermissionType = {
-  id: number;
-  name: string;
-  actionId: number;
-  action: ActionType;
-};
-export type ActionType = {
-  id: number;
-  name: string;
-  value: number;
 };

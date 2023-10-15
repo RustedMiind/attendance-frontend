@@ -10,13 +10,14 @@ import {
   Divider,
 } from "@mui/material";
 import { useState } from "react";
-import { PermissionType } from "./CreateNewRoleDialog";
+import { PermissionType } from "../../../../types/Permission";
+import { CompressedPermissionType } from "../../../../types/CompressedPermission";
 
 function PermissionInput({ permission }: PropsType) {
   const [checked, setChecked] = useState(false);
 
   // test
-  const [action, setAction] = useState("read_only");
+  const [action, setAction] = useState("no_action");
 
   const handleChange = (event: SelectChangeEvent) => {
     setAction(event.target.value);
@@ -47,12 +48,14 @@ function PermissionInput({ permission }: PropsType) {
             disabled={!checked}
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={checked ? action : ""}
+            value={checked ? permission.actions[0].name : ""}
             label="Action"
             onChange={handleChange}
-            defaultValue={permission.action.name}
+            defaultValue={permission.actions[0].name}
           >
-            <MenuItem value={"read_only"}>{permission.action.name}</MenuItem>
+            {permission.actions.map((a) => (
+              <MenuItem value={a.name}>{a.name}</MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Stack>
@@ -62,7 +65,7 @@ function PermissionInput({ permission }: PropsType) {
 }
 
 type PropsType = {
-  permission: PermissionType;
+  permission: CompressedPermissionType;
 };
 
 export default PermissionInput;
