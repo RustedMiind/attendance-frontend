@@ -48,7 +48,7 @@ function PermissionInput({ permission }: PropsType) {
             disabled={!checked}
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={checked ? permission.actions[0].name : ""}
+            value={checked ? action : ""}
             label="Action"
             onChange={handleChange}
             defaultValue={permission.actions[0].name}
