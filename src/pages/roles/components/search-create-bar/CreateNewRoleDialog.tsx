@@ -19,6 +19,9 @@ export default function CreateNewRoleDialog(props: PropsType) {
   const [permissions, setPermissions] = React.useState<
     null | CompressedPermissionType[]
   >(null);
+  let [currentPermissions, setCurrentPermissions] = React.useState<
+    { pIndex: number; aIndex: number }[]
+  >([]);
   React.useEffect(() => {
     setTimeout(() => {
       axios
@@ -33,8 +36,29 @@ export default function CreateNewRoleDialog(props: PropsType) {
           console.log(res.data.data);
         });
     }, 2000);
-  }, []);
-
+  }, [props.open]);
+  const permissionsHandler = (pIndex: number, aIndex: number) => {
+    let found = false;
+    let index = -1;
+    currentPermissions.forEach((cp, i) => {
+      if (cp.pIndex === pIndex) {
+        found = true;
+        index = i;
+      }
+    });
+    if (found && index >= 0) {
+      currentPermissions[index].aIndex = aIndex;
+    } else {
+      currentPermissions.push({ pIndex, aIndex });
+    }
+    setCurrentPermissions(currentPermissions);
+  };
+  const permissionInputAction = (pIndex: number) => {
+    return (aIndex: number) => {
+      permissionsHandler(pIndex, aIndex);
+      console.log(currentPermissions);
+    };
+  };
   return (
     <Dialog
       component={"form"}
@@ -59,14 +83,22 @@ export default function CreateNewRoleDialog(props: PropsType) {
           fullWidth
         />
         <Stack my={2}>
-          {permissions?.map((permission) => (
-            <PermissionInput key={permission.name} permission={permission} />
+          {permissions?.map((permission, i) => (
+            <PermissionInput
+              addPermission={permissionInputAction(i)}
+              key={permission.name}
+              permission={permission}
+            />
           ))}
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleClose}>
+        <Button
+          variant="contained"
+          onClick={handleClose}
+          disabled={!permissions?.length}
+        >
           Create Role
         </Button>
       </DialogActions>

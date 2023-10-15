@@ -13,14 +13,19 @@ import { useState } from "react";
 import { PermissionType } from "../../../../types/Permission";
 import { CompressedPermissionType } from "../../../../types/CompressedPermission";
 
-function PermissionInput({ permission }: PropsType) {
+function PermissionInput({ permission, addPermission }: PropsType) {
   const [checked, setChecked] = useState(false);
 
   // test
-  const [action, setAction] = useState("no_action");
+  const [action, setAction] = useState(0);
 
   const handleChange = (event: SelectChangeEvent) => {
-    setAction(event.target.value);
+    permission.actions.forEach((p, i) => {
+      if (p.permissionId === parseInt(event.target.value)) {
+        setAction(i);
+      }
+      addPermission(i);
+    });
   };
 
   return (
@@ -48,13 +53,17 @@ function PermissionInput({ permission }: PropsType) {
             disabled={!checked}
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={checked ? action : ""}
+            value={
+              checked
+                ? permission.actions[action].permissionId.toString()
+                : (0).toString()
+            }
             label="Action"
             onChange={handleChange}
             defaultValue={permission.actions[0].name}
           >
             {permission.actions.map((a) => (
-              <MenuItem value={a.name}>{a.name}</MenuItem>
+              <MenuItem value={a.permissionId}>{a.name}</MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -66,6 +75,7 @@ function PermissionInput({ permission }: PropsType) {
 
 type PropsType = {
   permission: CompressedPermissionType;
+  addPermission: (x: number) => void;
 };
 
 export default PermissionInput;
