@@ -13,7 +13,7 @@ import { useState } from "react";
 import { PermissionType } from "../../../../types/Permission";
 import { CompressedPermissionType } from "../../../../types/CompressedPermission";
 
-function PermissionInput({ permission, addPermission }: PropsType) {
+function PermissionInput({ permission }: PropsType) {
   const [checked, setChecked] = useState(false);
 
   // test
@@ -23,8 +23,8 @@ function PermissionInput({ permission, addPermission }: PropsType) {
     permission.actions.forEach((p, i) => {
       if (p.permissionId === parseInt(event.target.value)) {
         setAction(i);
+        console.log(event.target.value);
       }
-      addPermission(i);
     });
   };
 
@@ -35,6 +35,7 @@ function PermissionInput({ permission, addPermission }: PropsType) {
           checked={checked}
           onChange={(e) => {
             setChecked(e.target.checked);
+            setAction(0);
           }}
         />
         <Typography
@@ -44,7 +45,14 @@ function PermissionInput({ permission, addPermission }: PropsType) {
         >
           {permission.name}
         </Typography>
-        <FormControl sx={{ ml: 2, width: "10rem" }}>
+        <FormControl
+          sx={{
+            ml: 2,
+            width: "10rem",
+            transition: "150ms",
+            ...(checked ? undefined : { opacity: 0, pointerEvents: "none" }),
+          }}
+        >
           <InputLabel id="demo-simple-select-label" size="small">
             Action
           </InputLabel>
@@ -53,17 +61,14 @@ function PermissionInput({ permission, addPermission }: PropsType) {
             disabled={!checked}
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={
-              checked
-                ? permission.actions[action].permissionId.toString()
-                : (0).toString()
-            }
+            value={permission.actions[action].permissionId.toString()}
             label="Action"
             onChange={handleChange}
-            defaultValue={permission.actions[0].name}
           >
             {permission.actions.map((a) => (
-              <MenuItem value={a.permissionId}>{a.name}</MenuItem>
+              <MenuItem key={a.permissionId} value={a.permissionId}>
+                {a.name}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
