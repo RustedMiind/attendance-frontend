@@ -13,15 +13,18 @@ import api from "../../../../statics/api";
 import { ApiSuccessfullResponse } from "../../../../types/ApiResponses";
 import { PermissionType } from "../../../../types/Permission";
 import { CompressedPermissionType } from "../../../../types/CompressedPermission";
+import { ppid } from "process";
 
 export default function CreateNewRoleDialog(props: PropsType) {
   const handleClose = props.close;
   const [permissions, setPermissions] = React.useState<
     null | CompressedPermissionType[]
   >(null);
+
   let [currentPermissions, setCurrentPermissions] = React.useState<
     { pIndex: number; aIndex: number }[]
   >([]);
+
   React.useEffect(() => {
     setTimeout(() => {
       axios
@@ -37,6 +40,7 @@ export default function CreateNewRoleDialog(props: PropsType) {
         });
     }, 2000);
   }, [props.open]);
+
   const permissionsHandler = (pIndex: number, aIndex: number) => {
     let found = false;
     let index = -1;
@@ -53,11 +57,27 @@ export default function CreateNewRoleDialog(props: PropsType) {
     }
     setCurrentPermissions(currentPermissions);
   };
+
   const permissionInputAction = (pIndex: number) => {
     return (aIndex: number) => {
       permissionsHandler(pIndex, aIndex);
       console.log(currentPermissions);
     };
+  };
+
+  const extractRoleData = (): {
+    // Not Working, Need to be fixed.
+    name: string;
+    permissionsIds: number[];
+  } | null => {
+    const name = "string";
+    const permissionsIds: number[] = [];
+
+    currentPermissions.forEach((cp) => {
+      permissionsIds.push(cp.pIndex);
+    });
+    console.log("Role Data", { name, permissionsIds });
+    return { name, permissionsIds };
   };
   return (
     <Dialog
@@ -96,7 +116,7 @@ export default function CreateNewRoleDialog(props: PropsType) {
         <Button onClick={handleClose}>Cancel</Button>
         <Button
           variant="contained"
-          onClick={handleClose}
+          onClick={extractRoleData}
           disabled={!permissions?.length}
         >
           Create Role
