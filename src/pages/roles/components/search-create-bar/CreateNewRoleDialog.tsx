@@ -12,73 +12,88 @@ import axios from "axios";
 import api from "../../../../statics/api";
 import { ApiSuccessfullResponse } from "../../../../types/ApiResponses";
 import { PermissionType } from "../../../../types/Permission";
-import { CompressedPermissionType } from "../../../../types/CompressedPermission";
-import { ppid } from "process";
+import {
+  CompressedPermissionType,
+  CompressedPermissionTypeWithSelect,
+} from "../../../../types/CompressedPermission";
+import { LoadingButton } from "@mui/lab";
 
 export default function CreateNewRoleDialog(props: PropsType) {
   const handleClose = props.close;
-  const [permissions, setPermissions] = React.useState<
-    null | CompressedPermissionType[]
+  const [name, setName] = React.useState("");
+  const [status, setStatus] = React.useState<"none" | "loading" | "error">(
+    "none"
+  );
+  const isLoading = status === "loading";
+  const isError = status === "error";
+  function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setName(e.target.value);
+  }
+  let [permissions, setPermissions] = React.useState<
+    null | CompressedPermissionTypeWithSelect[]
   >(null);
 
-  let [currentPermissions, setCurrentPermissions] = React.useState<
-    { pIndex: number; aIndex: number }[]
-  >([]);
-
   React.useEffect(() => {
-    setTimeout(() => {
-      axios
-        .get<
-          ApiSuccessfullResponse<{
-            permissions: PermissionType[];
-            compressedPermissions: CompressedPermissionType[];
-          }>
-        >(api("permission/togive"))
-        .then((res) => {
-          setPermissions(res.data.data.compressedPermissions);
-          console.log(res.data.data);
-        });
-    }, 2000);
+    axios
+      .get<
+        ApiSuccessfullResponse<{
+          permissions: PermissionType[];
+          compressedPermissions: CompressedPermissionType[];
+        }>
+      >(api("permission/togive"))
+      .then((res) => {
+        setPermissions(res.data.data.compressedPermissions);
+        console.log(res.data.data);
+      });
   }, [props.open]);
 
-  const permissionsHandler = (pIndex: number, aIndex: number) => {
-    let found = false;
-    let index = -1;
-    currentPermissions.forEach((cp, i) => {
-      if (cp.pIndex === pIndex) {
-        found = true;
-        index = i;
+  function setSelectGenerator(permissionIndex: number) {
+    return function (actionId: number) {
+      if (permissions) {
+        permissions[permissionIndex].select = actionId;
+        setPermissions([...permissions]);
+      } else {
+        console.log("permissions : ", typeof permissions);
       }
-    });
-    if (found && index >= 0) {
-      currentPermissions[index].aIndex = aIndex;
-    } else {
-      currentPermissions.push({ pIndex, aIndex });
-    }
-    setCurrentPermissions(currentPermissions);
-  };
-
-  const permissionInputAction = (pIndex: number) => {
-    return (aIndex: number) => {
-      permissionsHandler(pIndex, aIndex);
-      console.log(currentPermissions);
     };
-  };
+  }
 
-  const extractRoleData = (): {
-    // Not Working, Need to be fixed.
-    name: string;
-    permissionsIds: number[];
-  } | null => {
-    const name = "string";
-    const permissionsIds: number[] = [];
+  function submitHandler(e: React.FormEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setStatus("loading");
+    const statePermisions = permissions;
+    setTimeout(() => {
+      if (statePermisions) {
+        let body: { name: string; permissions: number[] } = {
+          name,
+          permissions: statePermisions
+            .filter((p) => !!p.select)
+            .map((p) => p.select) as number[],
+        };
+        if (body.permissions.length) {
+          console.log("body", body);
+          axios
+            .post(api("role/new"), {
+              name: body.name,
+              permissions: body.permissions,
+            })
+            .then((res) => {
+              console.log(res);
+              setStatus("none");
+            })
+            .catch((err) => {
+              console.log(err);
+              setStatus("error");
+            });
+        } else {
+          setStatus("error");
+        }
+      } else {
+        setStatus("error");
+      }
+    }, 1500);
+  }
 
-    currentPermissions.forEach((cp) => {
-      permissionsIds.push(cp.pIndex);
-    });
-    console.log("Role Data", { name, permissionsIds });
-    return { name, permissionsIds };
-  };
   return (
     <Dialog
       component={"form"}
@@ -86,6 +101,7 @@ export default function CreateNewRoleDialog(props: PropsType) {
       fullWidth
       open={props.open}
       onClose={handleClose}
+      onSubmit={submitHandler}
     >
       <DialogTitle>Create New Role</DialogTitle>
       <DialogContent>
@@ -101,26 +117,42 @@ export default function CreateNewRoleDialog(props: PropsType) {
           type="text"
           variant="outlined"
           fullWidth
+          value={name}
+          disabled={isLoading}
+          onChange={handleNameChange}
+          error={isError}
+          helperText={isError ? "An error occured" : undefined}
         />
         <Stack my={2}>
           {permissions?.map((permission, i) => (
             <PermissionInput
-              addPermission={permissionInputAction(i)}
               key={permission.name}
               permission={permission}
+              setSelect={setSelectGenerator(i)}
+              select={permission.select}
+              isLoading={isLoading}
+              isError={isError}
             />
           ))}
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={handleClose}>Cancel</Button>
         <Button
+          color={isError ? "error" : undefined}
+          disabled={isLoading}
+          onClick={handleClose}
+        >
+          Cancel
+        </Button>
+        <LoadingButton
           variant="contained"
-          onClick={extractRoleData}
-          disabled={!permissions?.length}
+          loading={isLoading}
+          // onClick={extractRoleData}
+          type="submit"
+          color={isError ? "error" : undefined}
         >
           Create Role
-        </Button>
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );

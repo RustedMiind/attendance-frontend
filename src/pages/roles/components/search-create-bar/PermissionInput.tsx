@@ -10,40 +10,45 @@ import {
   Divider,
 } from "@mui/material";
 import { useState } from "react";
-import { PermissionType } from "../../../../types/Permission";
-import { CompressedPermissionType } from "../../../../types/CompressedPermission";
+import { CompressedPermissionTypeWithSelect } from "../../../../types/CompressedPermission";
 
-function PermissionInput({ permission }: PropsType) {
+function PermissionInput(props: PropsType) {
   const [checked, setChecked] = useState(false);
 
-  // test
-  const [action, setAction] = useState(0);
-
   const handleChange = (event: SelectChangeEvent) => {
-    permission.actions.forEach((p, i) => {
-      if (p.permissionId === parseInt(event.target.value)) {
-        setAction(i);
-        console.log(event.target.value);
-      }
-    });
+    console.log("old permissions", props.permission);
+    props.setSelect(parseInt(event.target.value));
+    console.log("new permissions", props.permission);
   };
+
+  const currentSelect = (
+    props.select || props.permission.actions[0].permissionId
+  ).toString();
+
+  console.log(props.select);
 
   return (
     <Stack>
       <Stack direction="row" gap={1} flexWrap={"wrap"} alignItems={"center"}>
         <Switch
           checked={checked}
+          color={props.isError ? "error" : undefined}
           onChange={(e) => {
             setChecked(e.target.checked);
-            setAction(0);
           }}
         />
         <Typography
           variant="h6"
-          color={checked ? "primary.main" : "text.secondary"}
+          color={
+            checked
+              ? props.isError
+                ? "error.main"
+                : "primary.main"
+              : "text.secondary"
+          }
           sx={{ flexGrow: 1 }}
         >
-          {permission.name}
+          {props.permission.name}
         </Typography>
         <FormControl
           sx={{
@@ -52,21 +57,22 @@ function PermissionInput({ permission }: PropsType) {
             transition: "150ms",
             ...(checked ? undefined : { opacity: 0, pointerEvents: "none" }),
           }}
+          error={props.isError}
         >
           <InputLabel id="demo-simple-select-label" size="small">
             Action
           </InputLabel>
           <Select
             size="small"
-            disabled={!checked}
+            disabled={!checked || props.isLoading}
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={permission.actions[action].permissionId.toString()}
+            value={currentSelect}
             label="Action"
             onChange={handleChange}
           >
-            {permission.actions.map((a) => (
-              <MenuItem key={a.permissionId} value={a.permissionId}>
+            {props.permission.actions.map((a) => (
+              <MenuItem key={a.permissionId} value={a.permissionId.toString()}>
                 {a.name}
               </MenuItem>
             ))}
@@ -79,8 +85,11 @@ function PermissionInput({ permission }: PropsType) {
 }
 
 type PropsType = {
-  permission: CompressedPermissionType;
-  addPermission: (x: number) => void;
+  permission: CompressedPermissionTypeWithSelect;
+  setSelect: (permissionId: number) => void;
+  select: number | undefined;
+  isLoading?: boolean;
+  isError?: boolean;
 };
 
 export default PermissionInput;

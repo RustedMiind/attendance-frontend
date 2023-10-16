@@ -5,3 +5,7 @@ export type CompressedPermissionType = {
     permissionId: number;
   }[];
 };
+
+export type CompressedPermissionTypeWithSelect = CompressedPermissionType & {
+  select?: number;
+};
