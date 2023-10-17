@@ -30,8 +30,9 @@ export default function CreateNewRoleDialog(props: PropsType) {
   >("none");
 
   const [error, setError] = React.useState<null | string>(null);
-  const isLoading = status === "loading";
-  const isError = status === "error";
+  const isLoading = status === "loading",
+    isError = status === "error",
+    isSuccess = status === "success";
   function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     setName(e.target.value);
   }
@@ -141,7 +142,7 @@ export default function CreateNewRoleDialog(props: PropsType) {
         </DialogActions>
       </Dialog>
       <Snackbar
-        open={status === "success" || isError}
+        open={status === "success" || status === "error"}
         autoHideDuration={6000}
         onClose={() => {
           setStatus("none");
@@ -151,7 +152,7 @@ export default function CreateNewRoleDialog(props: PropsType) {
           onClose={() => {
             setStatus("none");
           }}
-          severity={isError ? "error" : "success"}
+          severity={isError ? "error" : isSuccess ? "success" : undefined}
           sx={{ width: "100%" }}
         >
           {isError ? error : "Role has been created successfully"}
