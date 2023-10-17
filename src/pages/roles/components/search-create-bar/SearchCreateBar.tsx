@@ -12,12 +12,14 @@ import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import CreateNewRoleDialog from "./CreateNewRoleDialog";
 import { useState } from "react";
+import { RoleType } from "../../../../types/Role";
 
 function SearchCreateBar(props: PropsType) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     props.setSearch(e.target.value);
   };
+
   return (
     <>
       <Stack direction={"row"} p={1} flexWrap={"wrap"}>
@@ -62,6 +64,7 @@ function SearchCreateBar(props: PropsType) {
       </Stack>
 
       <CreateNewRoleDialog
+        setRoles={props.setRoles}
         open={dialogOpen}
         close={() => {
           setDialogOpen(false);
@@ -74,6 +77,7 @@ function SearchCreateBar(props: PropsType) {
 type PropsType = {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
+  setRoles: (roles: RoleType[]) => void;
 };
 
 export default SearchCreateBar;

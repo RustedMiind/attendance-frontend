@@ -33,6 +33,7 @@ function PermissionInput(props: PropsType) {
         <Switch
           checked={checked}
           color={props.isError ? "error" : undefined}
+          disabled={props.isLoading}
           onChange={(e) => {
             setChecked(e.target.checked);
           }}

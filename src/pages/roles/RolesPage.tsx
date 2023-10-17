@@ -36,7 +36,11 @@ function RolesPage() {
   return (
     <>
       <Box>
-        <SearchCreateBar search={search} setSearch={setSearch} />
+        <SearchCreateBar
+          setRoles={setRoles}
+          search={search}
+          setSearch={setSearch}
+        />
         {Array.isArray(roles) && (
           <RolesContainer
             roles={roles.filter((role) => {

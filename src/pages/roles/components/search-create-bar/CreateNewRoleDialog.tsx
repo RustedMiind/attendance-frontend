@@ -17,6 +17,7 @@ import {
   CompressedPermissionTypeWithSelect,
 } from "../../../../types/CompressedPermission";
 import { LoadingButton } from "@mui/lab";
+import { RoleType } from "../../../../types/Role";
 
 export default function CreateNewRoleDialog(props: PropsType) {
   const handleClose = props.close;
@@ -29,22 +30,30 @@ export default function CreateNewRoleDialog(props: PropsType) {
   function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     setName(e.target.value);
   }
+  function ResetDialog() {}
   let [permissions, setPermissions] = React.useState<
     null | CompressedPermissionTypeWithSelect[]
   >(null);
 
   React.useEffect(() => {
-    axios
-      .get<
-        ApiSuccessfullResponse<{
-          permissions: PermissionType[];
-          compressedPermissions: CompressedPermissionType[];
-        }>
-      >(api("permission/togive"))
-      .then((res) => {
-        setPermissions(res.data.data.compressedPermissions);
-        console.log(res.data.data);
-      });
+    if (props.open) {
+      setPermissions(null);
+      setName("");
+      setStatus("none");
+      setTimeout(() => {
+        axios
+          .get<
+            ApiSuccessfullResponse<{
+              permissions: PermissionType[];
+              compressedPermissions: CompressedPermissionType[];
+            }>
+          >(api("permission/togive"))
+          .then((res) => {
+            setPermissions(res.data.data.compressedPermissions);
+            console.log(res.data.data);
+          });
+      }, 800);
+    }
   }, [props.open]);
 
   function setSelectGenerator(permissionIndex: number) {
@@ -73,13 +82,15 @@ export default function CreateNewRoleDialog(props: PropsType) {
         if (body.permissions.length) {
           console.log("body", body);
           axios
-            .post(api("role/new"), {
+            .post<ApiSuccessfullResponse<RoleType[]>>(api("role/new"), {
               name: body.name,
               permissions: body.permissions,
             })
             .then((res) => {
-              console.log(res);
+              console.log("update Roles", res);
               setStatus("none");
+              props.setRoles(res.data.data);
+              props.close();
             })
             .catch((err) => {
               console.log(err);
@@ -106,8 +117,8 @@ export default function CreateNewRoleDialog(props: PropsType) {
       <DialogTitle>Create New Role</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          To subscribe to this website, please enter your email address here. We
-          will send updates occasionally.
+          You Can Only create role if you have role write permission and you can
+          only give permissions you have or permissions below
         </DialogContentText>
         <TextField
           autoFocus
@@ -161,4 +172,5 @@ export default function CreateNewRoleDialog(props: PropsType) {
 type PropsType = {
   open: boolean;
   close: () => void;
+  setRoles: (roles: RoleType[]) => void;
 };
